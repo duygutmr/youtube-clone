@@ -1,11 +1,18 @@
 import { Stack, Box, Typography } from "@mui/material";
-import Sidebar from "./Sidebar";
+import {Sidebar, Videos} from "./";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+import { fetchingAPI } from "../utils/fetchingAPI";
 
 const Feed = () => {
-
   const [selectedCategory, setSelectedCategory] = useState("New");
+  const [videos, setVideos] = useState([]);
+
+  useEffect(() => {
+    fetchingAPI(`search?part=snippet&q=${selectedCategory}`)
+    .then((data) => setVideos(data.items))
+  }, [selectedCategory]);
 
   return (
     <Stack sx={{ flexDirection: { sx: "column", md: "row" } }}>
@@ -16,7 +23,10 @@ const Feed = () => {
           px: { sx: 0, md: 2 },
         }}
       >
-        <Sidebar selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
+        <Sidebar
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+        />
         <Typography
           className="copyright"
           variant="body2"
@@ -25,6 +35,12 @@ const Feed = () => {
           Copyright 2022
         </Typography>
       </Box>
+      <Box p={2} sx={{ overflowY: "auto", height: "90vh", flex: 2 }}>
+        <Typography variant="h4" fontWeight={800} mb={2} sx={{ color: "#fff" }}>
+          {selectedCategory} <span style={{ color: "#F31502" }}>Videos</span>
+        </Typography>
+      </Box>
+      <Videos videos={videos} />
     </Stack>
   );
 };
